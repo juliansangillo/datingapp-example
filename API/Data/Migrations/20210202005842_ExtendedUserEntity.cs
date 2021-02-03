@@ -39,6 +39,12 @@ namespace API.Data.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.AddColumn<string>(
+                name: "Gender",
+                table: "Users",
+                type: "TEXT",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
                 name: "Interests",
                 table: "Users",
                 type: "TEXT",
@@ -116,6 +122,10 @@ namespace API.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "DateOfBirth",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "Gender",
                 table: "Users");
 
             migrationBuilder.DropColumn(
