@@ -23,7 +23,7 @@ namespace API.Entities {
 
         public string GetPhotoUrl() {
 
-            return Photos.FirstOrDefault(photo => photo.IsMain).Url;
+            return Photos.FirstOrDefault(photo => photo.IsMain)?.Url;
         }
 
         public int GetAge() {
