@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,11 +27,27 @@ namespace API.Data {
 				.SingleOrDefaultAsync(user => user.Username == username);
 		}
 
-		public async Task<IEnumerable<AppUser>> GetUsersAsync() {
+		public async Task<PagedList<AppUser>> GetUsersAsync(UserParams userParams) {
 			
-            return await context.Users
+            var query = context.Users
 				.Include(user => user.Photos)
-				.ToListAsync();
+                .AsNoTracking()
+                .AsQueryable();
+
+            query = query.Where(u => u.Username != userParams.CurrentUsername);
+            query = query.Where(u => u.Gender == userParams.Gender);
+
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+
+            query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+            query = userParams.OrderBy switch {
+                "created" => query.OrderByDescending(u => u.Created),
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
+
+            return await PagedList<AppUser>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
 		}
 
 		public async Task<bool> SaveAllAsync() {
