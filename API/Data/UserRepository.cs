@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,11 +25,13 @@ namespace API.Data {
 				.SingleOrDefaultAsync(user => user.Username == username);
 		}
 
-		public async Task<IEnumerable<AppUser>> GetUsersAsync() {
+		public async Task<PagedList<AppUser>> GetUsersAsync(UserParams userParams) {
 			
-            return await context.Users
+            var query = context.Users
 				.Include(user => user.Photos)
-				.ToListAsync();
+                .AsNoTracking();
+
+            return await PagedList<AppUser>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
 		}
 
 		public async Task<bool> SaveAllAsync() {
