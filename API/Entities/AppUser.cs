@@ -21,6 +21,9 @@ namespace API.Entities {
         public string Country { get; set; }
         public ICollection<Photo> Photos { get; set; }
 
+        public ICollection<UserLike> LikedBy { get; set; }
+        public ICollection<UserLike> Likes { get; set; }
+
         public string GetPhotoUrl() {
 
             return Photos.FirstOrDefault(photo => photo.IsMain)?.Url;
