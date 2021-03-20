@@ -31,7 +31,7 @@ namespace API.Controllers {
 
 			using var hmac = new HMACSHA512();
 
-			user.Username = registerDto.Username.ToLower();
+			user.UserName = registerDto.Username.ToLower();
 			user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
 			user.PasswordSalt = hmac.Key;
 
@@ -39,7 +39,7 @@ namespace API.Controllers {
 			await context.SaveChangesAsync();
 
 			return new UserDto {
-				Username = user.Username,
+				Username = user.UserName,
 				Token = tokenService.CreateToken(user),
 				KnownAs = user.KnownAs,
                 Gender = user.Gender
@@ -48,7 +48,7 @@ namespace API.Controllers {
 
 		[HttpPost("login")]
 		public async Task<ActionResult<UserDto>> Login(LoginDto loginDto) {
-			var user = await context.Users.Include(user => user.Photos).SingleOrDefaultAsync(user => user.Username == loginDto.Username);
+			var user = await context.Users.Include(user => user.Photos).SingleOrDefaultAsync(user => user.UserName == loginDto.Username);
 
 			if (user == null)
 				return Unauthorized("Invalid username");
@@ -63,7 +63,7 @@ namespace API.Controllers {
 			}
 
 			return new UserDto {
-				Username = user.Username,
+				Username = user.UserName,
 				Token = tokenService.CreateToken(user),
 				PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain)?.Url,
 				KnownAs = user.KnownAs,
@@ -73,7 +73,7 @@ namespace API.Controllers {
 
 		private async Task<bool> UserExists(string username) {
 
-			return await context.Users.AnyAsync(user => user.Username == username.ToLower());
+			return await context.Users.AnyAsync(user => user.UserName == username.ToLower());
 		}
 	}
 }

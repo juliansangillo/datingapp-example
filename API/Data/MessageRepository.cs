@@ -43,11 +43,11 @@ namespace API.Data {
 				.AsQueryable();
 
 			query = messageParams.Container switch {
-				"Inbox" => query.Where(u => u.Recipient.Username == messageParams.Username
+				"Inbox" => query.Where(u => u.Recipient.UserName == messageParams.Username
                     && !u.RecipientDeleted),
-				"Outbox" => query.Where(u => u.Sender.Username == messageParams.Username
+				"Outbox" => query.Where(u => u.Sender.UserName == messageParams.Username
                     && !u.SenderDeleted),
-				_ => query.Where(u => u.Recipient.Username == messageParams.Username
+				_ => query.Where(u => u.Recipient.UserName == messageParams.Username
                     && !u.RecipientDeleted && u.DateRead == null)
 			};
 
@@ -60,15 +60,15 @@ namespace API.Data {
 			var messages = await context.Messages
                 .Include(u => u.Sender).ThenInclude(p => p.Photos)
                 .Include(u => u.Recipient).ThenInclude(p => p.Photos)
-                .Where(m => m.Recipient.Username == currentUsername && !m.RecipientDeleted
-                    && m.Sender.Username == recipientUsername
-                    || m.Recipient.Username == recipientUsername
-                    && m.Sender.Username == currentUsername && !m.SenderDeleted
+                .Where(m => m.Recipient.UserName == currentUsername && !m.RecipientDeleted
+                    && m.Sender.UserName == recipientUsername
+                    || m.Recipient.UserName == recipientUsername
+                    && m.Sender.UserName == currentUsername && !m.SenderDeleted
                 )
                 .OrderBy(m => m.MessageSent)
                 .ToListAsync();
 
-            var unreadMessages = messages.Where(m => m.DateRead == null && m.Recipient.Username == currentUsername).ToList();
+            var unreadMessages = messages.Where(m => m.DateRead == null && m.Recipient.UserName == currentUsername).ToList();
             if(unreadMessages.Any()) {
                 foreach(var message in unreadMessages) {
                     message.DateRead = DateTime.Now;
