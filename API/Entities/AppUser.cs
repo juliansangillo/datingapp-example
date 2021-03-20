@@ -24,6 +24,9 @@ namespace API.Entities {
         public ICollection<UserLike> LikedBy { get; set; }
         public ICollection<UserLike> Likes { get; set; }
 
+        public ICollection<Message> MessagesSent { get; set; }
+        public ICollection<Message> MessagesReceived { get; set; }
+
         public string GetPhotoUrl() {
 
             return Photos.FirstOrDefault(photo => photo.IsMain)?.Url;
