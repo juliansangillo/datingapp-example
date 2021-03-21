@@ -24,7 +24,7 @@ namespace API.Data {
 			
             return await context.Users
 				.Include(user => user.Photos)
-				.SingleOrDefaultAsync(user => user.Username == username);
+				.SingleOrDefaultAsync(user => user.UserName == username);
 		}
 
 		public async Task<PagedList<AppUser>> GetUsersAsync(UserParams userParams) {
@@ -34,7 +34,7 @@ namespace API.Data {
                 .AsNoTracking()
                 .AsQueryable();
 
-            query = query.Where(u => u.Username != userParams.CurrentUsername);
+            query = query.Where(u => u.UserName != userParams.CurrentUsername);
             query = query.Where(u => u.Gender == userParams.Gender);
 
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
