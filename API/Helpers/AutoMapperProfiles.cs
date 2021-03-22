@@ -1,3 +1,4 @@
+using System;
 using API.DTOs;
 using API.Entities;
 using AutoMapper;
@@ -11,6 +12,7 @@ namespace API.Helpers {
             CreateMap<Photo, PhotoDto>();
 			CreateMap<RegisterDto, AppUser>();
             CreateMap<Message, MessageDto>();
+            CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d, DateTimeKind.Utc));
 		}
 	}
 }
