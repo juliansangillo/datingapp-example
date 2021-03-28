@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using API.Entities;
+using API.Entities.DB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +14,8 @@ namespace API.Controllers {
 			this.userManager = userManager;
 		}
 
-		[Authorize(Policy = "RequireAdminRole")]
 		[HttpGet("users-with-roles")]
+        [Authorize(Policy = "RequireAdminRole")]
 		public async Task<ActionResult> GetUsersWithRoles() {
 			var users = await userManager.Users
                 .Include(r => r.UserRoles)
@@ -52,8 +52,8 @@ namespace API.Controllers {
             return Ok(await userManager.GetRolesAsync(user));
         }
 
-		[Authorize(Policy = "ModeratePhotoRole")]
 		[HttpGet("photos-to-moderate")]
+        [Authorize(Policy = "ModeratePhotoRole")]
 		public ActionResult GetPhotosForModeration() {
 			return Ok("Admins or moderators can see this");
 		}

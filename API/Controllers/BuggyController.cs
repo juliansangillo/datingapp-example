@@ -1,10 +1,10 @@
 using API.Data;
-using API.Entities;
+using API.Entities.DB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers {
-    public class BuggyController : BaseApiController {
+	public class BuggyController : BaseApiController {
         private DataContext context;
 
         public BuggyController(DataContext context) {
