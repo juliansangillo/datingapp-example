@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using API.Entities;
 using API.Entities.DB;
@@ -10,6 +11,9 @@ namespace API.Settings {
             CreateMap<RegisterDto, AppUser>();
             CreateMap<AppUser, UserDto>()
                 .ForMember(u => u.PhotoUrl, conf => conf.MapFrom(au => au.Photos.FirstOrDefault(photo => photo.IsMain).Url));
+
+            CreateMap<AppUser, UserWithRoles>()
+                .ForMember(ur => ur.Roles, conf => conf.MapFrom(au => au.UserRoles.Select(r => r.Role.Name).ToList()));
 
             CreateMap<AppUser, BasicUser>();
             CreateMap<AppUser, LikeDto>();
