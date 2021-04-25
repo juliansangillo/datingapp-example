@@ -39,10 +39,10 @@ namespace API.Controllers {
             if(!roleResult.Succeeded)
                 return BadRequest(roleResult.Errors);
 
-            AccountUser account = mapper.Map<AccountUser>(user);
-            account.Token = await tokenService.CreateToken(user);
+            UserDto userDto = mapper.Map<UserDto>(user);
+            userDto.Token = await tokenService.CreateToken(user);
 
-			return Ok(mapper.Map<UserDto>(account));
+			return Ok(userDto);
 		}
 
 		[HttpPost("login")]
@@ -56,10 +56,10 @@ namespace API.Controllers {
             if(!result.Succeeded)
                 return Unauthorized();
             
-            AccountUser account = mapper.Map<AccountUser>(user);
-            account.Token = await tokenService.CreateToken(user);
+            UserDto userDto = mapper.Map<UserDto>(user);
+            userDto.Token = await tokenService.CreateToken(user);
 
-			return Ok(mapper.Map<UserDto>(account));
+			return Ok(userDto);
 		}
 
 		private async Task<bool> UserExists(string username) {

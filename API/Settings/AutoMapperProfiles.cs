@@ -1,3 +1,4 @@
+using System.Linq;
 using API.Entities;
 using API.Entities.DB;
 using API.Entities.DTOs;
@@ -7,8 +8,8 @@ namespace API.Settings {
 	public class AutoMapperProfiles : Profile {
 		public AutoMapperProfiles() {
             CreateMap<RegisterDto, AppUser>();
-            CreateMap<AppUser, AccountUser>();
-            CreateMap<AccountUser, UserDto>();
+            CreateMap<AppUser, UserDto>()
+                .ForMember(u => u.PhotoUrl, conf => conf.MapFrom(au => au.Photos.FirstOrDefault(photo => photo.IsMain).Url));
 
             CreateMap<AppUser, BasicUser>();
             CreateMap<AppUser, LikeDto>();
