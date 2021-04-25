@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using API.Entities.DTOs;
 using API.Entities.DB;
+using API.Entities;
 
 namespace API.Controllers {
 	[Authorize]
@@ -22,18 +23,18 @@ namespace API.Controllers {
 
 		[HttpPost]
 		public async Task<ActionResult<MessageDto>> CreateMessage(CreateMessageDto createMessageDto) {
-			var username = User.GetUsername();
+			string username = User.GetUsername();
 
-			if (username == createMessageDto.RecipientUsername.ToLower())
+			if(username == createMessageDto.RecipientUsername.ToLower())
 				return BadRequest("You cannot send messages to yourself");
 
-			var sender = await unitOfWork.UserRepository.GetUserByUsernameAsync(username);
-			var recipient = await unitOfWork.UserRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
+			AppUser sender = await unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+			AppUser recipient = await unitOfWork.UserRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
 
-			if (recipient == null)
+			if(recipient == null)
 				return NotFound();
 
-			var message = new Message {
+			Message message = new Message {
 				Sender = sender,
 				Recipient = recipient,
 				SenderUsername = sender.UserName,
@@ -43,7 +44,7 @@ namespace API.Controllers {
 
 			unitOfWork.MessageRepository.AddMessage(message);
 
-			if (await unitOfWork.Complete())
+			if(await unitOfWork.Complete())
 				return Ok(mapper.Map<MessageDto>(message));
 
 			return BadRequest("Failed to send message");
@@ -53,7 +54,7 @@ namespace API.Controllers {
 		public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUser([FromQuery] MessageParams messageParams) {
 			messageParams.Username = User.GetUsername();
 
-			var messages = await unitOfWork.MessageRepository.GetMessagesForUser(messageParams);
+			PagedList<MessageDto> messages = await unitOfWork.MessageRepository.GetMessagesForUser(messageParams);
 
 			Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
 
@@ -62,23 +63,23 @@ namespace API.Controllers {
 
 		[HttpDelete("{id}")]
 		public async Task<ActionResult> DeleteMessage(int id) {
-			var username = User.GetUsername();
+			string username = User.GetUsername();
 
-			var message = await unitOfWork.MessageRepository.GetMessage(id);
+			Message message = await unitOfWork.MessageRepository.GetMessage(id);
 
-			if (message.Sender.UserName != username && message.Recipient.UserName != username)
+			if(message.Sender.UserName != username && message.Recipient.UserName != username)
 				return Unauthorized();
 
-			if (message.Sender.UserName == username)
+			if(message.Sender.UserName == username)
 				message.SenderDeleted = true;
 
-			if (message.Recipient.UserName == username)
+			if(message.Recipient.UserName == username)
 				message.RecipientDeleted = true;
 
-			if (message.SenderDeleted && message.RecipientDeleted)
+			if(message.SenderDeleted && message.RecipientDeleted)
 				unitOfWork.MessageRepository.DeleteMessage(message);
 
-			if (await unitOfWork.Complete())
+			if(await unitOfWork.Complete())
 				return Ok();
 
 			return BadRequest("Problem deleting the message");

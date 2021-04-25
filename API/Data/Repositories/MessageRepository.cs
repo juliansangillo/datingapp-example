@@ -58,11 +58,9 @@ namespace API.Data.Repositories {
 		}
 
 		public async Task<PagedList<MessageDto>> GetMessagesForUser(MessageParams messageParams) {
-			var query = context.Messages
-				.OrderByDescending(m => m.MessageSent)
-                .Include(u => u.Sender.Photos)
-                .Include(u => u.Recipient.Photos)
+			IQueryable<MessageDto> query = context.Messages
                 .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
+                .OrderByDescending(m => m.MessageSent)
 				.AsQueryable();
 
 			query = messageParams.Container switch {
@@ -78,24 +76,19 @@ namespace API.Data.Repositories {
 		}
 
 		public async Task<IEnumerable<MessageDto>> GetMessageThread(string currentUsername, string recipientUsername) {
-			var messages = await context.Messages
-                .Include(u => u.Sender).ThenInclude(p => p.Photos)
-                .Include(u => u.Recipient).ThenInclude(p => p.Photos)
-                .Where(m => m.Recipient.UserName == currentUsername && !m.RecipientDeleted
-                    && m.Sender.UserName == recipientUsername
-                    || m.Recipient.UserName == recipientUsername
-                    && m.Sender.UserName == currentUsername && !m.SenderDeleted
+			IList<MessageDto> messages = await context.Messages
+                .Where(
+                    m => m.Recipient.UserName == currentUsername && m.Sender.UserName == recipientUsername && !m.RecipientDeleted ||
+                    m.Recipient.UserName == recipientUsername && m.Sender.UserName == currentUsername && !m.SenderDeleted
                 )
-                .OrderBy(m => m.MessageSent)
                 .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
+                .OrderBy(m => m.MessageSent)
                 .ToListAsync();
 
-            var unreadMessages = messages.Where(m => m.DateRead == null && m.RecipientUsername == currentUsername).ToList();
-            if(unreadMessages.Any()) {
-                foreach(var message in unreadMessages) {
+            IList<MessageDto> unreadMessages = messages.Where(m => m.DateRead == null && m.RecipientUsername == currentUsername).ToList();
+            if(unreadMessages.Any())
+                foreach(MessageDto message in unreadMessages)
                     message.DateRead = DateTime.UtcNow;
-                }
-            }
 
             return messages;
 		}
