@@ -20,7 +20,9 @@ namespace API.Settings {
                 .ForMember(l => l.PhotoUrl, conf => conf.MapFrom(au => au.Photos.FirstOrDefault(photo => photo.IsMain).Url))
                 .ForMember(l => l.Age, conf => conf.MapFrom(au => au.DateOfBirth.CalculateAge()));
             
-            CreateMap<AppUser, MemberDto>();
+            CreateMap<AppUser, MemberDto>()
+                .ForMember(m => m.PhotoUrl, conf => conf.MapFrom(au => au.Photos.FirstOrDefault(photo => photo.IsMain).Url))
+                .ForMember(m => m.Age, conf => conf.MapFrom(au => au.DateOfBirth.CalculateAge()));
 			CreateMap<MemberUpdateDto, AppUser>();
             CreateMap<Photo, PhotoDto>();
 
