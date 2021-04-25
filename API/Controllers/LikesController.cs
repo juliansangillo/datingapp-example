@@ -20,19 +20,19 @@ namespace API.Controllers {
 
 		[HttpPost("{username}")]
 		public async Task<ActionResult> AddLike(string username) {
-			var sourceUserId = User.GetUserId();
-			var likedUser = await unitOfWork.UserRepository.GetBasicUserByUsernameAsync(username);
-			var sourceUser = await unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId);
+			int sourceUserId = User.GetUserId();
+			BasicUser likedUser = await unitOfWork.UserRepository.GetBasicUserByUsernameAsync(username);
+			AppUser sourceUser = await unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId);
 
-			if (likedUser == null)
+			if(likedUser == null)
 				return NotFound();
 
-			if (sourceUser.UserName == username)
+			if(sourceUser.UserName == username)
 				return BadRequest("You cannot like yourself");
 
-			var userLike = await unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
+			UserLike userLike = await unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
 
-			if (userLike != null)
+			if(userLike != null)
 				return BadRequest("You already like this user");
 
 			userLike = new UserLike {
@@ -51,7 +51,7 @@ namespace API.Controllers {
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery] LikesParams likesParams) {
 			likesParams.UserId = User.GetUserId();
-			var users = await unitOfWork.LikesRepository.GetUserLikes(likesParams);
+			PagedList<LikeDto> users = await unitOfWork.LikesRepository.GetUserLikes(likesParams);
 
 			Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 

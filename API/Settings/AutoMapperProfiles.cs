@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
 using API.Entities;
 using API.Entities.DB;
 using API.Entities.DTOs;
+using API.Extensions;
 using AutoMapper;
 
 namespace API.Settings {
@@ -16,7 +16,9 @@ namespace API.Settings {
                 .ForMember(ur => ur.Roles, conf => conf.MapFrom(au => au.UserRoles.Select(r => r.Role.Name).ToList()));
 
             CreateMap<AppUser, BasicUser>();
-            CreateMap<AppUser, LikeDto>();
+            CreateMap<AppUser, LikeDto>()
+                .ForMember(l => l.PhotoUrl, conf => conf.MapFrom(au => au.Photos.FirstOrDefault(photo => photo.IsMain).Url))
+                .ForMember(l => l.Age, conf => conf.MapFrom(au => au.DateOfBirth.CalculateAge()));
             
             CreateMap<AppUser, MemberDto>();
 			CreateMap<MemberUpdateDto, AppUser>();

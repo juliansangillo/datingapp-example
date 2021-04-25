@@ -24,26 +24,20 @@ namespace API.Data.Repositories {
 		}
 
 		public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams) {
-			var users = context.Users.AsQueryable();
-            var likes = context.Likes.AsQueryable();
+			IQueryable<AppUser> users = context.Users.AsQueryable();
+            IQueryable<UserLike> likes = context.Likes.AsQueryable();
 
             if(likesParams.Predicate == "liked") {
                 likes = likes.Where(like => like.SourceUserId == likesParams.UserId);
-                users = likes
-                    .Include(like => like.LikedUser)
-                    .ThenInclude(user => user.Photos)
-                    .Select(like => like.LikedUser);
+                users = likes.Select(like => like.LikedUser);
             }
 
             if(likesParams.Predicate == "likedBy") {
                 likes = likes.Where(like => like.LikedUserId == likesParams.UserId);
-                users = likes
-                    .Include(like => like.SourceUser)
-                    .ThenInclude(user => user.Photos)
-                    .Select(like => like.SourceUser);
+                users = likes.Select(like => like.SourceUser);
             }
 
-            var likedUsers = users.AsSplitQuery().OrderBy(user => user.UserName).ProjectTo<LikeDto>(mapper.ConfigurationProvider);
+            IQueryable<LikeDto> likedUsers = users.AsSplitQuery().ProjectTo<LikeDto>(mapper.ConfigurationProvider).OrderBy(l => l.Username);
 
             return await PagedList<LikeDto>.CreateAsync(likedUsers, likesParams.PageNumber, likesParams.PageSize);
 		}
