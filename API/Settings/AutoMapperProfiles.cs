@@ -7,7 +7,8 @@ namespace API.Settings {
 	public class AutoMapperProfiles : Profile {
 		public AutoMapperProfiles() {
             CreateMap<RegisterDto, AppUser>();
-            CreateMap<AppUser, UserDto>();
+            CreateMap<AppUser, AccountUser>();
+            CreateMap<AccountUser, UserDto>();
 
             CreateMap<AppUser, BasicUser>();
             CreateMap<AppUser, LikeDto>();
