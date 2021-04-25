@@ -13,7 +13,7 @@ using API.Entities.DB;
 
 namespace API.Controllers {
 	[Authorize]
-	public class UsersController : BaseApiController {
+	public class UsersController : ApiController {
 		private readonly IMapper mapper;
 		private readonly IPhotoService photoService;
 		private readonly IUnitOfWork unitOfWork;

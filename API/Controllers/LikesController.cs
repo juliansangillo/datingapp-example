@@ -11,7 +11,7 @@ using API.Entities;
 
 namespace API.Controllers {
 	[Authorize]
-	public class LikesController : BaseApiController {
+	public class LikesController : ApiController {
 		private readonly IUnitOfWork unitOfWork;
 
 		public LikesController(IUnitOfWork unitOfWork) {

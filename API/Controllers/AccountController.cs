@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using API.Entities;
 using API.Entities.DB;
 using API.Entities.DTOs;
 using API.Interfaces;
@@ -9,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers {
-	public class AccountController : BaseApiController {
+	public class AccountController : ApiController {
 		private readonly ITokenService tokenService;
 		private readonly IMapper mapper;
 		private readonly UserManager<AppUser> userManager;

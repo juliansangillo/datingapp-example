@@ -11,7 +11,7 @@ using API.Entities.DB;
 
 namespace API.Controllers {
 	[Authorize]
-	public class MessagesController : BaseApiController {
+	public class MessagesController : ApiController {
 		private readonly IMapper mapper;
 		private readonly IUnitOfWork unitOfWork;
 

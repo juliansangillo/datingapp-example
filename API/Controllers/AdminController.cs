@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers {
-	public class AdminController : BaseApiController {
+	public class AdminController : ApiController {
 		private readonly UserManager<AppUser> userManager;
 		private readonly IMapper mapper;
 

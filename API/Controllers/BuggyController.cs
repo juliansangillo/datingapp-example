@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers {
-	public class BuggyController : BaseApiController {
+	public class BuggyController : ApiController {
         private DataContext context;
 
         public BuggyController(DataContext context) {
