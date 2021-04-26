@@ -21,25 +21,25 @@ namespace API.Services {
 		}
 
 		public async Task<string> CreateToken(AppUser user) {
-			var claims = new List<Claim> {
+			List<Claim> claims = new List<Claim> {
 				new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
 				new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
 			};
 
-            var roles = await userManager.GetRolesAsync(user);
+            IList<string> roles = await userManager.GetRolesAsync(user);
             
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+			SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-			var tokenDescriptor = new SecurityTokenDescriptor {
+			SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor {
 				Subject = new ClaimsIdentity(claims),
 				Expires = DateTime.Now.AddDays(7),
 				SigningCredentials = creds
 			};
 
-			var tokenHandler = new JwtSecurityTokenHandler();
-			var token = tokenHandler.CreateToken(tokenDescriptor);
+			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+			SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
 			return tokenHandler.WriteToken(token);
 		}

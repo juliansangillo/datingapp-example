@@ -12,17 +12,17 @@ using Microsoft.Extensions.Logging;
 namespace API {
 	public class Program {
 		public static async Task Main(string[] args) {
-			var host = CreateHostBuilder(args).Build();
-			using var scope = host.Services.CreateScope();
-			var services = scope.ServiceProvider;
+			IHost host = CreateHostBuilder(args).Build();
+			using IServiceScope scope = host.Services.CreateScope();
+			IServiceProvider services = scope.ServiceProvider;
 			try {
-                var context = services.GetRequiredService<DataContext>();
-                var userManager = services.GetRequiredService<UserManager<AppUser>>();
-                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+                DataContext context = services.GetRequiredService<DataContext>();
+                UserManager<AppUser> userManager = services.GetRequiredService<UserManager<AppUser>>();
+                RoleManager<AppRole> roleManager = services.GetRequiredService<RoleManager<AppRole>>();
                 await context.Database.MigrateAsync();
 				await Seed.SeedUsers(userManager, roleManager);
 			} catch (Exception e) {
-				var logger = services.GetRequiredService<ILogger<Program>>();
+				ILogger<Program> logger = services.GetRequiredService<ILogger<Program>>();
                 logger.LogError(e, "An error occurred during migration");
 			}
 

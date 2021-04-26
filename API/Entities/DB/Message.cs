@@ -17,15 +17,5 @@ namespace API.Entities.DB {
         
         public bool SenderDeleted { get; set; }
         public bool RecipientDeleted { get; set; }
-
-        public string GetSenderPhotoUrl() {
-
-            return Sender.Photos.FirstOrDefault(photo => photo.IsMain)?.Url;
-        }
-
-        public string GetRecipientPhotoUrl() {
-
-            return Recipient.Photos.FirstOrDefault(photo => photo.IsMain)?.Url;
-        }
 	}
 }

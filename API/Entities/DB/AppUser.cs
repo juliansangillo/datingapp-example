@@ -25,13 +25,5 @@ namespace API.Entities.DB {
         public ICollection<Message> MessagesReceived { get; set; }
 
         public ICollection<AppUserRole> UserRoles { get; set; }
-
-        public string GetPhotoUrl() {
-            return Photos?.FirstOrDefault(photo => photo.IsMain)?.Url;
-        }
-
-        public int GetAge() {
-            return DateOfBirth.CalculateAge();
-        }
     }
 }

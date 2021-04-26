@@ -79,8 +79,8 @@ namespace API.Data {
 		/// Make sure this is called after configuring all your entities.
 		/// </summary>
 		public static void ApplyUtcDateTimeConverter(this ModelBuilder builder) {
-			foreach (var entityType in builder.Model.GetEntityTypes()) {
-				foreach (var property in entityType.GetProperties()) {
+			foreach (IMutableEntityType entityType in builder.Model.GetEntityTypes()) {
+				foreach (IMutableProperty property in entityType.GetProperties()) {
 					if (!property.IsUtc()) {
 						continue;
 					}
