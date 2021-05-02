@@ -4,6 +4,18 @@ img.img-thumbnail {
     margin-bottom: 2px;
 }
 
+img.unapproved {
+    opacity: 0.2;
+}
+
+.awaiting-approval {
+    position: absolute;
+    text-align: right;
+    bottom: 20px;
+    right: 20px;
+    color: #FF2E00;
+}
+
 .nv-file-over {
     border: dotted 3px red;
 }
