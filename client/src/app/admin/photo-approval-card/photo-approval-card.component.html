@@ -1,0 +1,10 @@
+<div class="card">
+    <h3 class="card-header text-center">{{photo.username}}</h3>
+    <div class="card-img-wrapper m-2">
+        <img class="card-img mb-2" src="{{photo.url}}" alt="{{photo.url}}">
+        <div class="text-center">
+            <button class="btn btn-sm btn-primary mr-1" (click)="onApprove()">Approve</button>
+            <button class="btn btn-sm btn-danger" (click)="onReject()">Reject</button>
+        </div>
+    </div>
+</div>

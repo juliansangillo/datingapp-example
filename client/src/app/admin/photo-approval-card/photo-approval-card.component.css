@@ -1,0 +1,9 @@
+.card {
+    border-radius: 1px;
+}
+
+.card .card-img-wrapper {
+    position: relative;
+    width: 150px;
+    overflow: hidden;
+}
