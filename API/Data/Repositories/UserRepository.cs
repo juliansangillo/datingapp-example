@@ -26,18 +26,29 @@ namespace API.Data.Repositories {
 
 		public async Task<AppUser> GetUserByUsernameAsync(string username) {
 			return await context.Users
-                .IgnoreQueryFilters()
 				.Include(user => user.Photos)
 				.SingleOrDefaultAsync(user => user.UserName == username);
 		}
 
-        public async Task<MemberDto> GetMemberByUsernameAsync(string username) {
-            return await context.Users
-                .IgnoreQueryFilters()
+        public async Task<MemberDto> GetMemberByUsernameAsync(string username, string currentUsername) {
+            IQueryable<AppUser> query = context.Users.AsQueryable();
+
+            if (username == currentUsername)
+                query = query.IgnoreQueryFilters();
+
+            return await query
                 .Where(user => user.UserName == username)
                 .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<MemberDto> GetMemberByPhotoIdAsync(int photoId) {
+			return await context.Users
+                .IgnoreQueryFilters()
+                .Where(user => user.Photos.SingleOrDefault(photo => photo.Id == photoId) != null)
+                .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
+		}
 
         public async Task<BasicUser> GetBasicUserByUsernameAsync(string username) {
             return await context.Users

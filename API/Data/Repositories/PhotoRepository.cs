@@ -19,11 +19,14 @@ namespace API.Data.Repositories {
 		}
 
 		public async Task<Photo> GetPhotoById(int id) {
-			return await context.Photos.FindAsync(id);
+			return await context.Photos
+                .IgnoreQueryFilters()
+                .SingleOrDefaultAsync(p => p.Id == id);
 		}
 
 		public async Task<ICollection<PhotoForApprovalDto>> GetUnapprovedPhotos() {
 			return await context.Photos
+                .IgnoreQueryFilters()
 				.Where(p => !p.IsApproved)
                 .ProjectTo<PhotoForApprovalDto>(mapper.ConfigurationProvider)
 				.OrderBy(p => p.Id)
