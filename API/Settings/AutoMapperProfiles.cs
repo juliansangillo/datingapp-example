@@ -24,7 +24,10 @@ namespace API.Settings {
                 .ForMember(m => m.PhotoUrl, conf => conf.MapFrom(au => au.Photos.FirstOrDefault(photo => photo.IsMain).Url))
                 .ForMember(m => m.Age, conf => conf.MapFrom(au => au.DateOfBirth.CalculateAge()));
 			CreateMap<MemberUpdateDto, AppUser>();
+            
             CreateMap<Photo, PhotoDto>();
+            CreateMap<Photo, PhotoForApprovalDto>()
+                .ForMember(dto => dto.Username, conf => conf.MapFrom(p => p.AppUser.UserName));
 
             CreateMap<Message, MessageDto>()
                 .ForMember(md => md.SenderPhotoUrl, conf => conf.MapFrom(m => m.Sender.Photos.FirstOrDefault(photo => photo.IsMain).Url))
