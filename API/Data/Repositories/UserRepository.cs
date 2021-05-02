@@ -26,6 +26,7 @@ namespace API.Data.Repositories {
 
 		public async Task<AppUser> GetUserByUsernameAsync(string username) {
 			return await context.Users
+                .IgnoreQueryFilters()
 				.Include(user => user.Photos)
 				.SingleOrDefaultAsync(user => user.UserName == username);
 		}
