@@ -48,6 +48,8 @@ namespace API.Data {
 				.HasForeignKey(s => s.LikedUserId)
 				.OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved);
+
 			builder.Entity<Message>()
 				.HasOne(u => u.Recipient)
 				.WithMany(m => m.MessagesReceived)

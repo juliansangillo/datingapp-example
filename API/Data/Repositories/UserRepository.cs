@@ -26,12 +26,14 @@ namespace API.Data.Repositories {
 
 		public async Task<AppUser> GetUserByUsernameAsync(string username) {
 			return await context.Users
+                .IgnoreQueryFilters()
 				.Include(user => user.Photos)
 				.SingleOrDefaultAsync(user => user.UserName == username);
 		}
 
         public async Task<MemberDto> GetMemberByUsernameAsync(string username) {
             return await context.Users
+                .IgnoreQueryFilters()
                 .Where(user => user.UserName == username)
                 .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
