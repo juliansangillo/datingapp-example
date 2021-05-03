@@ -1,10 +1,6 @@
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using API.Data;
-using API.DTOs;
-using API.Entities;
+using API.Entities.DB;
+using API.Entities.DTOs;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers {
-	public class AccountController : BaseApiController {
+	public class AccountController : ApiController {
 		private readonly ITokenService tokenService;
 		private readonly IMapper mapper;
 		private readonly UserManager<AppUser> userManager;
@@ -27,51 +23,45 @@ namespace API.Controllers {
 
 		[HttpPost("register")]
 		public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto) {
-			if (await UserExists(registerDto.Username))
+			if(await UserExists(registerDto.Username))
 				return BadRequest("Username is taken");
 
-			var user = mapper.Map<AppUser>(registerDto);
+			AppUser user = mapper.Map<AppUser>(registerDto);
 
 			user.UserName = registerDto.Username.ToLower();
 
-			var result = await userManager.CreateAsync(user, registerDto.Password);
+			IdentityResult result = await userManager.CreateAsync(user, registerDto.Password);
             if(!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            var roleResult = await userManager.AddToRoleAsync(user, "Member");
+            IdentityResult roleResult = await userManager.AddToRoleAsync(user, "Member");
             if(!roleResult.Succeeded)
-                return BadRequest(result.Errors);
+                return BadRequest(roleResult.Errors);
 
-			return new UserDto {
-				Username = user.UserName,
-				Token = await tokenService.CreateToken(user),
-				KnownAs = user.KnownAs,
-				Gender = user.Gender
-			};
+            UserDto userDto = mapper.Map<UserDto>(user);
+            userDto.Token = await tokenService.CreateToken(user);
+
+			return Ok(userDto);
 		}
 
 		[HttpPost("login")]
 		public async Task<ActionResult<UserDto>> Login(LoginDto loginDto) {
-			var user = await userManager.Users.Include(user => user.Photos).SingleOrDefaultAsync(user => user.UserName == loginDto.Username.ToLower());
+			AppUser user = await userManager.Users.Include(user => user.Photos).SingleOrDefaultAsync(user => user.UserName == loginDto.Username.ToLower());
 
-			if (user == null)
+			if(user == null)
 				return Unauthorized("Invalid username");
 
-            var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+			Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if(!result.Succeeded)
                 return Unauthorized();
+            
+            UserDto userDto = mapper.Map<UserDto>(user);
+            userDto.Token = await tokenService.CreateToken(user);
 
-			return new UserDto {
-				Username = user.UserName,
-				Token = await tokenService.CreateToken(user),
-				PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain)?.Url,
-				KnownAs = user.KnownAs,
-				Gender = user.Gender
-			};
+			return Ok(userDto);
 		}
 
 		private async Task<bool> UserExists(string username) {
-
 			return await userManager.Users.AnyAsync(user => user.UserName == username.ToLower());
 		}
 	}

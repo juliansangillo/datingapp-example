@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,9 +9,8 @@ namespace API.SignalR {
         public Task<bool> UserConnected(string username, string connectionId) {
             bool isOnline = false;
             lock(OnlineUsers) {
-                if(OnlineUsers.ContainsKey(username)) {
+                if(OnlineUsers.ContainsKey(username))
                     OnlineUsers[username].Add(connectionId);
-                }
                 else {
                     OnlineUsers.Add(username, new List<string>{connectionId});
                     isOnline = true;

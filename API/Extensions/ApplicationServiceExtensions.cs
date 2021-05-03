@@ -2,6 +2,7 @@ using API.Data;
 using API.Helpers;
 using API.Interfaces;
 using API.Services;
+using API.Settings;
 using API.SignalR;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,8 @@ namespace API.Extensions {
             services.AddSingleton<PresenceTracker>();
             services.AddScoped<LogUserActivity>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPhotoService, PhotoService>();
-            services.AddScoped<ILikesRepository, LikesRepository>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
 
             return services;
         }

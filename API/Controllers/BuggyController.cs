@@ -1,10 +1,10 @@
 using API.Data;
-using API.Entities;
+using API.Entities.DB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers {
-    public class BuggyController : BaseApiController {
+	public class BuggyController : ApiController {
         private DataContext context;
 
         public BuggyController(DataContext context) {
@@ -21,9 +21,9 @@ namespace API.Controllers {
         [HttpGet("not-found")]
         public ActionResult<AppUser> GetNotFound() {
             
-            var thing = this.context.Users.Find(-1);
+            AppUser thing = this.context.Users.Find(-1);
 
-            if (thing == null)
+            if(thing == null)
                 return NotFound();
 
             return Ok(thing);
@@ -32,8 +32,8 @@ namespace API.Controllers {
         [HttpGet("server-error")]
         public ActionResult<string> GetServerError() {
             
-            var thing = this.context.Users.Find(-1);
-            var thingToReturn = thing.ToString();
+            AppUser thing = this.context.Users.Find(-1);
+            string thingToReturn = thing.ToString();
 
             return thingToReturn;
         }

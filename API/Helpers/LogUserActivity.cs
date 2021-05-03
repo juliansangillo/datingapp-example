@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using API.Entities.DB;
 using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -8,16 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 namespace API.Helpers {
 	public class LogUserActivity : IAsyncActionFilter {
 		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next) {
-			var resultContext = await next();
+			ActionExecutedContext resultContext = await next();
 
             if(!resultContext.HttpContext.User.Identity.IsAuthenticated)
                 return;
 
-            var userId = resultContext.HttpContext.User.GetUserId();
-            var repo = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            var user = await repo.GetUserByIdAsync(userId);
-            user.LastActive = DateTime.Now;
-            await repo.SaveAllAsync();
+            int userId = resultContext.HttpContext.User.GetUserId();
+            IUnitOfWork unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+            AppUser user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            
+            user.LastActive = DateTime.UtcNow;
+
+            await unitOfWork.Complete();
 		}
 	}
 }
