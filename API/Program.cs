@@ -23,10 +23,20 @@ namespace API {
             await host.RunAsync();
 		}
 
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)
+		public static IHostBuilder CreateHostBuilder(string[] args) {
+			return Host.CreateDefaultBuilder(args)
 				.ConfigureWebHostDefaults(webBuilder => {
-					webBuilder.UseStartup<Startup>();
+                    string httpsPort = Environment.GetEnvironmentVariable("HTTPS_PORT");
+                    string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+                    string host = Environment.GetEnvironmentVariable("HOST") ?? "localhost";
+
+                    string https = httpsPort != null ? $"https://{host}:{httpsPort}" : null;
+                    string http = $"http://{host}:{port}";
+                    
+					webBuilder
+                        .UseUrls(https, http)
+                        .UseStartup<Startup>();
 				});
+        }
 	}
 }

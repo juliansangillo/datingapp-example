@@ -20,14 +20,16 @@ namespace API.Extensions {
                 string dbPassword = config["Database:Password"];
                 string dbName = config["Database:Name"];
 
-                string connectionString = new NpgsqlConnectionStringBuilder() {
+                NpgsqlConnectionStringBuilder connection = new NpgsqlConnectionStringBuilder() {
                     Host = dbHost,
                     Username = dbUser,
                     Password = dbPassword,
-                    Database = dbName
-                }.ConnectionString;
+                    Database = dbName,
+                    SslMode = SslMode.Disable
+                };
+                connection.Pooling = true;
 
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connection.ConnectionString);
             });
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
