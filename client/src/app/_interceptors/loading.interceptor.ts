@@ -8,6 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { BusyService } from '../_services/busy.service';
 import { delay, finalize } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
@@ -17,7 +18,7 @@ export class LoadingInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     this.busyService.busy();
     return next.handle(request).pipe(
-      delay(1000),
+      delay(environment.loadingDelay),
       finalize(() => {
         this.busyService.idle();
       })

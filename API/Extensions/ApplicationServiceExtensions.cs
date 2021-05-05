@@ -1,3 +1,4 @@
+using System;
 using API.Data;
 using API.Helpers;
 using API.Interfaces;
@@ -8,12 +9,25 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace API.Extensions {
     public static class ApplicationServiceExtensions {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config) {
             services.AddDbContext<DataContext>(options => {
-                options.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                string dbHost = config["Database:Host"];
+                string dbUser = config["Database:UserId"];
+                string dbPassword = config["Database:Password"];
+                string dbName = config["Database:Name"];
+
+                string connectionString = new NpgsqlConnectionStringBuilder() {
+                    Host = dbHost,
+                    Username = dbUser,
+                    Password = dbPassword,
+                    Database = dbName
+                }.ConnectionString;
+
+                options.UseNpgsql(connectionString);
             });
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
