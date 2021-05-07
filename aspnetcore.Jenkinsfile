@@ -183,20 +183,20 @@ pipeline {
 
     }
     steps {
-        try {
-            sh (
-                script: "docker push ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION}",
-                label: "Docker push image ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} to Google registry"
-            )
+        script {
+            try {
+                sh (
+                    script: "docker push ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION}",
+                    label: "Docker push image ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} to Google registry"
+                )
 
-            script {
                 cloud.deployToRun env.SERVICE_NAME env.REGION env.GOOGLE_DOCKER_REGISTRY env.VERSION env.ENVIRONMENT env.PORT env.SERVICE_ACCOUNT env.MEMORY env.CPU env.TIMEOUT env.MAXIMUM_REQUESTS env.MAX_INSTANCES env.DB_INSTANCE env.VPC_CONNECTOR env.VPC_EGRESS
             }
-        }
-        catch(err) {
-            semantic.rollback "${env.GITHUB_CREDENTIALS_ID}"
-            currentBuild.result = 'FAILURE'
-            throw err
+            catch(err) {
+                semantic.rollback "${env.GITHUB_CREDENTIALS_ID}"
+                currentBuild.result = 'FAILURE'
+                throw err
+            }
         }
 
         sh (
