@@ -77,8 +77,12 @@ pipeline {
         }
         dir("client") {
             sh (
+                script: 'npm install @angular/cli',
+                label: 'Install Angular'
+            )
+            sh (
                 script: 'npm run test -- --no-watch --no-progress --code-coverage --browsers=ChromeHeadless',
-                label: 'Angular/NodeJS Test'
+                label: 'Angular Test'
             )
         }
     }
