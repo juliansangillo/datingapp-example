@@ -23,8 +23,8 @@ namespace API {
             await host.RunAsync();
 		}
 
-		public static IHostBuilder CreateHostBuilder(string[] args) {
-			return Host.CreateDefaultBuilder(args)
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
+			Host.CreateDefaultBuilder(args)
 				.ConfigureWebHostDefaults(webBuilder => {
                     string httpsPort = Environment.GetEnvironmentVariable("HTTPS_PORT");
                     string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -37,6 +37,5 @@ namespace API {
                         .UseUrls(https, http)
                         .UseStartup<Startup>();
 				});
-        }
 	}
 }

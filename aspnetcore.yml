@@ -1,0 +1,55 @@
+google:
+  docker:
+    registry: gcr.io/datingapp-example/datingapp-api
+mapping:
+  prod:
+    branch: release
+    prerelease: false
+    angular:
+      environment: production
+    cloudrun:
+      service_name: datingapp-example-na
+      region: us-east1
+      env: Production
+      port: 8080
+      service_account: na-prod-admin@datingapp-example.iam.gserviceaccount.com
+      memory: 1 GiB
+      cpu: 2
+      timeout: 300
+      maximum_requests: 80
+      max_instances: 100
+      db_instance: datingapp-example:us-east1:datingapp-example-na
+  test:
+    branch: test
+    prerelease: true
+    angular:
+      environment: test
+    cloudrun:
+      service_name: datingapp-example-na-test
+      region: us-east1
+      env: Testing
+      port: 8080
+      service_account: na-test-admin@datingapp-example.iam.gserviceaccount.com
+      memory: 1 GiB
+      cpu: 2
+      timeout: 300
+      maximum_requests: 80
+      max_instances: 100
+      db_instance: datingapp-example:us-east1:datingapp-example-na-test
+  dev:
+    branch: develop
+    prerelease: true
+    angular:
+      environment: development
+    cloudrun:
+      service_name: datingapp-example-na-dev
+      region: us-east1
+      env: Development
+      port: 8080
+      service_account: na-dev-admin@datingapp-example.iam.gserviceaccount.com
+      memory: 256 MiB
+      cpu: 1
+      timeout: 300
+      maximum_requests: 80
+      max_instances: 1
+      db_instance: datingapp-example:us-east1:datingapp-example-na-dev
