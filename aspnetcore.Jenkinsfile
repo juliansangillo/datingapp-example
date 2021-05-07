@@ -63,10 +63,10 @@ pipeline {
       node {
         label "${env.AGENT_PREFIX}"
       }
-      tools {
-        nodejs "nodejs"
-      }
 
+    }
+    tools {
+        nodejs "nodejs"
     }
     steps {
         dir("API") {
