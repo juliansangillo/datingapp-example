@@ -271,8 +271,8 @@ post {
     node(env.AGENT_PREFIX) {
       sh(
         script: """
-            docker rm -vf $(docker ps -a -q) || echo 0
-            docker rmi -f $(docker images -a -q) || echo 0
+            docker rm -vf \$(docker ps -a -q) || echo 0
+            docker rmi -f \$(docker images -a -q) || echo 0
         """,
         label: 'Post docker cleanup'
       )
