@@ -66,7 +66,7 @@ pipeline {
 
     }
     tools {
-        nodejs "nodejs"
+        nodejs "Node 15.6"
     }
     steps {
         dir("API") {
