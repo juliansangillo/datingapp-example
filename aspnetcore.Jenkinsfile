@@ -119,7 +119,7 @@ pipeline {
     }
     steps {
         script {
-            semantic.init env.MAPPING_PROD_BRANCH, env.MAPPING_TEST_BRANCH, env.MAPPING_DEV_BRANCH, env.MAPPING_PROD_PRERELEASE, env.MAPPING_TEST_PRERELEASE, env.MAPPING_DEV_PRERELEASE 'aspnetcore'
+            semantic.init env.MAPPING_PROD_BRANCH, env.MAPPING_TEST_BRANCH, env.MAPPING_DEV_BRANCH, env.MAPPING_PROD_PRERELEASE, env.MAPPING_TEST_PRERELEASE, env.MAPPING_DEV_PRERELEASE, 'aspnetcore'
         }
 
         script {
@@ -234,7 +234,7 @@ pipeline {
                     def vpc_connector = env.VPC_CONNECTOR.split(';').get(index)
                     def vpc_egress = env.VPC_EGRESS.split(';').get(index)
 
-                    cloud.deployToRun service_name region env.GOOGLE_DOCKER_REGISTRY env.VERSION env.ENVIRONMENT env.PORT service_account env.MEMORY env.CPU env.TIMEOUT env.MAXIMUM_REQUESTS env.MAX_INSTANCES db_instance vpc_connector vpc_egress
+                    cloud.deployToRun service_name, region, env.GOOGLE_DOCKER_REGISTRY, env.VERSION, env.ENVIRONMENT, env.PORT, service_account, env.MEMORY, env.CPU, env.TIMEOUT, env.MAXIMUM_REQUESTS, env.MAX_INSTANCES, db_instance, vpc_connector, vpc_egress
                 }
             }
             catch(err) {
