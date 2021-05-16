@@ -15,16 +15,16 @@ pipeline {
         script {
             def datas = readYaml file: "${env.CONFIG_FILE}"
 
-            env.GOOGLE_DOCKER_REGISTRY = datas.google.docker.registry
+            env.GOOGLE_DOCKER_REGISTRY = datas.google?.docker?.registry
 
-            env.MAPPING_PROD_BRANCH = datas.mapping.prod.branch
-            env.MAPPING_PROD_PRERELEASE = datas.mapping.prod.prerelease
-            env.MAPPING_TEST_BRANCH = datas.mapping.test.branch
-            env.MAPPING_TEST_PRERELEASE = datas.mapping.test.prerelease
-            env.MAPPING_DEV_BRANCH = datas.mapping.dev.branch
-            env.MAPPING_DEV_PRERELEASE = datas.mapping.dev.prerelease
+            env.MAPPING_PROD_BRANCH = datas.mapping?.prod?.branch
+            env.MAPPING_PROD_PRERELEASE = datas.mapping?.prod?.prerelease
+            env.MAPPING_TEST_BRANCH = datas.mapping?.test?.branch
+            env.MAPPING_TEST_PRERELEASE = datas.mapping?.test?.prerelease
+            env.MAPPING_DEV_BRANCH = datas.mapping?.dev?.branch
+            env.MAPPING_DEV_PRERELEASE = datas.mapping?.dev?.prerelease
 
-            def mapping = ""
+            def mapping = null
             if(env.BRANCH_NAME == env.MAPPING_PROD_BRANCH) {
                 mapping = datas.mapping.prod
             }
@@ -35,7 +35,9 @@ pipeline {
                 mapping = datas.mapping.dev
             }
 
-            if(mapping != "") {
+            env.IS_VALID = env.GOOGLE_DOCKER_REGISTRY != "" && mapping?.angular != null && mapping?.cloudrun != null
+
+            if(env.IS_VALID == "true") {
                 env.ANGULAR_ENV = mapping.angular.environment
 
                 env.ENVIRONMENT = mapping.cloudrun.env
@@ -66,7 +68,6 @@ pipeline {
 
                     prefix = delimiter
                 }
-                env.SERVICE_COUNT = services.size
             }
         }
 
@@ -139,12 +140,21 @@ pipeline {
   }
 
   stage('Build') {
+    agent {
+      node {
+        label "${env.AGENT_PREFIX}"
+      }
+
+    }
     when {
       beforeAgent true
       anyOf {
         branch env.MAPPING_PROD_BRANCH;
         branch env.MAPPING_TEST_BRANCH;
         branch env.MAPPING_DEV_BRANCH
+      }
+      expression {
+        return env.IS_VALID == "true" && env.VERSION != ""
       }
 
     }
@@ -175,6 +185,9 @@ pipeline {
         branch env.MAPPING_TEST_BRANCH;
         branch env.MAPPING_DEV_BRANCH
       }
+      expression {
+        return env.IS_VALID == "true" && env.VERSION != ""
+      }
 
     }
     steps {
@@ -198,6 +211,9 @@ pipeline {
         branch env.MAPPING_PROD_BRANCH;
         branch env.MAPPING_TEST_BRANCH;
         branch env.MAPPING_DEV_BRANCH
+      }
+      expression {
+        return env.IS_VALID == "true" && env.VERSION != ""
       }
 
     }
