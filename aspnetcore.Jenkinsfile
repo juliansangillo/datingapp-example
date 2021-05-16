@@ -38,20 +38,35 @@ pipeline {
             if(mapping != "") {
                 env.ANGULAR_ENV = mapping.angular.environment
 
-                env.SERVICE_NAME = mapping.cloudrun.service_name
-                env.REGION = mapping.cloudrun.region
-                env.IMAGE_NAME = mapping.cloudrun.image_name
                 env.ENVIRONMENT = mapping.cloudrun.env
                 env.PORT = mapping.cloudrun.port
-                env.SERVICE_ACCOUNT = mapping.cloudrun.service_account
                 env.MEMORY = mapping.cloudrun.memory
                 env.CPU = mapping.cloudrun.cpu
                 env.TIMEOUT = mapping.cloudrun.timeout
                 env.MAXIMUM_REQUESTS = mapping.cloudrun.maximum_requests
                 env.MAX_INSTANCES = mapping.cloudrun.max_instances
-                env.DB_INSTANCE = mapping.cloudrun.db_instance
-                env.VPC_CONNECTOR = mapping.cloudrun.vpc_connector
-                env.VPC_EGRESS = mapping.cloudrun.vpc_egress
+
+                env.SERVICE_NAME = ""
+                env.REGION = ""
+                env.SERVICE_ACCOUNT = ""
+                env.DB_INSTANCE = ""
+                env.VPC_CONNECTOR = ""
+                env.VPC_EGRESS = ""
+
+                def services = mapping.cloudrun.services
+                def delimiter = ";"
+                def prefix = ""
+                for(service in services) {
+                    env.SERVICE_NAME += prefix + service.service_name
+                    env.REGION += prefix + service.region
+                    env.SERVICE_ACCOUNT += prefix + service.service_account
+                    env.DB_INSTANCE += prefix + service.db_instance
+                    env.VPC_CONNECTOR += prefix + service.vpc_connector
+                    env.VPC_EGRESS += prefix + service.vpc_egress
+
+                    prefix = delimiter
+                }
+                env.SERVICE_COUNT = services.size
             }
         }
 
@@ -103,7 +118,7 @@ pipeline {
     }
     steps {
         script {
-            semantic.init env.MAPPING_PROD_BRANCH, env.MAPPING_TEST_BRANCH, env.MAPPING_DEV_BRANCH, env.MAPPING_PROD_PRERELEASE, env.MAPPING_TEST_PRERELEASE, env.MAPPING_DEV_PRERELEASE
+            semantic.init env.MAPPING_PROD_BRANCH, env.MAPPING_TEST_BRANCH, env.MAPPING_DEV_BRANCH, env.MAPPING_PROD_PRERELEASE, env.MAPPING_TEST_PRERELEASE, env.MAPPING_DEV_PRERELEASE 'aspnetcore'
         }
 
         script {
@@ -194,7 +209,17 @@ pipeline {
                     label: "Docker push image ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} to Google registry"
                 )
 
-                cloud.deployToRun env.SERVICE_NAME env.REGION env.GOOGLE_DOCKER_REGISTRY env.VERSION env.ENVIRONMENT env.PORT env.SERVICE_ACCOUNT env.MEMORY env.CPU env.TIMEOUT env.MAXIMUM_REQUESTS env.MAX_INSTANCES env.DB_INSTANCE env.VPC_CONNECTOR env.VPC_EGRESS
+                parallelize env.AGENT_PREFIX, env.SERVICE_NAME.split(';'), { service_name ->
+                    def index = env.SERVICE_NAME.split(';').indexOf(service_name)
+
+                    def region = env.REGION.split(';').get(index)
+                    def service_account = env.SERVICE_ACCOUNT.split(';').get(index)
+                    def db_instance = env.DB_INSTANCE.split(';').get(index)
+                    def vpc_connector = env.VPC_CONNECTOR.split(';').get(index)
+                    def vpc_egress = env.VPC_EGRESS.split(';').get(index)
+
+                    cloud.deployToRun service_name region env.GOOGLE_DOCKER_REGISTRY env.VERSION env.ENVIRONMENT env.PORT service_account env.MEMORY env.CPU env.TIMEOUT env.MAXIMUM_REQUESTS env.MAX_INSTANCES db_instance vpc_connector vpc_egress
+                }
             }
             catch(err) {
                 semantic.rollback "${env.GITHUB_CREDENTIALS_ID}"
