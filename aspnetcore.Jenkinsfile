@@ -133,7 +133,7 @@ pipeline {
         }
         
         script {
-            cloud.configureDocker
+            cloud.configureDocker()
         }
 
     }
