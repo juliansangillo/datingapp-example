@@ -1,0 +1,17 @@
+# directories
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+**/wwwroot/
+**/node_modules/
+**/ssl/
+**/coverage/
+
+# files
+Dockerfile*
+**/*.trx
+**/*.md
+**/*.ps1
+**/*.cmd
+**/*.sh
