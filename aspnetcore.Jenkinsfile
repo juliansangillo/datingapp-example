@@ -65,9 +65,6 @@ pipeline {
       }
 
     }
-    tools {
-        nodejs "Node 15.6"
-    }
     steps {
         dir("API") {
             sh (
@@ -81,7 +78,7 @@ pipeline {
                 label: 'Install dependencies'
             )
             sh (
-                script: 'npm run test -- --no-watch --no-progress --code-coverage --browsers=ChromeHeadless',
+                script: 'ng test -- --no-watch --no-progress --code-coverage --browsers=ChromeHeadless',
                 label: 'Angular Test'
             )
         }
