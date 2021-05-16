@@ -159,9 +159,6 @@ pipeline {
 
     }
     steps {
-      println(env.IS_VALID != "true")
-      println(env.VERSION.trim() != "")
-      
       sh (
         script: "docker build --build-arg environment=${env.ANGULAR_ENV} -t ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} .",
         label: "Docker build for ${env.GOOGLE_DOCKER_REGISTRY} with tag ${env.VERSION}"
