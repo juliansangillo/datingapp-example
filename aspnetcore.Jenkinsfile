@@ -154,13 +154,13 @@ pipeline {
         branch env.MAPPING_DEV_BRANCH
       }
       expression {
-        env.IS_VALID == "true" && env.VERSION
+        env.IS_VALID == "true" && env.VERSION.trim()
       }
 
     }
     steps {
       println(env.IS_VALID != "true")
-      println(env.VERSION)
+      println(env.VERSION.trim() != "")
       
       sh (
         script: "docker build --build-arg environment=${env.ANGULAR_ENV} -t ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} .",
@@ -189,7 +189,7 @@ pipeline {
         branch env.MAPPING_DEV_BRANCH
       }
       expression {
-        env.IS_VALID == "true" && env.VERSION
+        env.IS_VALID == "true" && env.VERSION.trim()
       }
 
     }
@@ -216,7 +216,7 @@ pipeline {
         branch env.MAPPING_DEV_BRANCH
       }
       expression {
-        env.IS_VALID == "true" && env.VERSION
+        env.IS_VALID == "true" && env.VERSION.trim()
       }
 
     }
