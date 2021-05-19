@@ -160,11 +160,11 @@ pipeline {
     }
     steps {
       sh (
-        script: "docker build --build-arg environment=${env.ANGULAR_ENV} -t ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} \.",
+        script: "docker build --build-arg environment=${env.ANGULAR_ENV} -t ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} $(pwd)",
         label: "Docker build for ${env.GOOGLE_DOCKER_REGISTRY} with tag ${env.VERSION}"
       )
       sh (
-        script: "docker build --build-arg environment=${env.ANGULAR_ENV} -t ${env.GOOGLE_DOCKER_REGISTRY}:latest \.",
+        script: "docker build --build-arg environment=${env.ANGULAR_ENV} -t ${env.GOOGLE_DOCKER_REGISTRY}:latest $(pwd)",
         label: "Docker build ${env.GOOGLE_DOCKER_REGISTRY} with tag latest"
       )
 
