@@ -221,7 +221,7 @@ pipeline {
         script {
             try {
                 sh (
-                    script: "docker push ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION}",
+                    script: 'docker push $GOOGLE_DOCKER_REGISTRY:$VERSION',
                     label: "Docker push image ${env.GOOGLE_DOCKER_REGISTRY}:${env.VERSION} to Google registry"
                 )
 
@@ -245,7 +245,7 @@ pipeline {
         }
 
         sh (
-            script: "docker push ${env.GOOGLE_DOCKER_REGISTRY}:latest",
+            script: 'docker push $GOOGLE_DOCKER_REGISTRY:latest',
             label: "Docker push image ${env.GOOGLE_DOCKER_REGISTRY}:latest to Google registry"
         )
     }
