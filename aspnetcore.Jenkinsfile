@@ -226,7 +226,7 @@ pipeline {
                 )
 
                 parallelize env.AGENT_PREFIX, env.SERVICE_NAME.split(';'), { service_name ->
-                    def index = env.SERVICE_NAME.split(';').indexOf(service_name)
+                    def index = env.SERVICE_NAME.tokenize(';').indexOf(service_name)
 
                     def region = env.REGION.split(';').get(index)
                     def service_account = env.SERVICE_ACCOUNT.split(';').get(index)
