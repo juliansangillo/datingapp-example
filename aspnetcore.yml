@@ -47,7 +47,7 @@ mapping:
     cloudrun:
       env: Development
       port: 8080
-      memory: 256 MiB
+      memory: 256Mi
       cpu: 1
       timeout: 300
       maximum_requests: 80
