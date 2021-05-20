@@ -1,4 +1,5 @@
 google:
+  project: datingapp-example
   docker:
     registry: gcr.io/datingapp-example/datingapp-api
 mapping:

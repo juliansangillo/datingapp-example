@@ -15,6 +15,7 @@ pipeline {
         script {
             def datas = readYaml file: "${env.CONFIG_FILE}"
 
+            env.GOOGLE_PROJECT = datas.google?.project
             env.GOOGLE_DOCKER_REGISTRY = datas.google?.docker?.registry
 
             env.MAPPING_PROD_BRANCH = datas.mapping?.prod?.branch
@@ -35,7 +36,7 @@ pipeline {
                 mapping = datas.mapping.dev
             }
 
-            env.IS_VALID = env.GOOGLE_DOCKER_REGISTRY != "" && mapping?.angular != null && mapping?.cloudrun != null
+            env.IS_VALID = env.GOOGLE_PROJECT != "" && env.GOOGLE_DOCKER_REGISTRY != "" && mapping?.angular != null && mapping?.cloudrun != null
 
             if(env.IS_VALID == "true") {
                 env.ANGULAR_ENV = mapping.angular.environment
@@ -253,7 +254,6 @@ pipeline {
 
 }
 environment {
-  GOOGLE_PROJECT = 'unity-firebuild'
   AGENT_PREFIX = 'jenkins-agent'
   JENKINS_CREDENTIALS_ID = 'jenkins-sa'
   GITHUB_CREDENTIALS_ID = 'github-credentials'
