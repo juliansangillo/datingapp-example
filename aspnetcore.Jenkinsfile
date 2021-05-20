@@ -228,11 +228,11 @@ pipeline {
                 parallelize env.AGENT_PREFIX, env.SERVICE_NAME.split(';'), { service_name ->
                     def index = env.SERVICE_NAME.tokenize(';').indexOf(service_name)
 
-                    def region = env.REGION.split(';').get(index)
-                    def service_account = env.SERVICE_ACCOUNT.split(';').get(index)
-                    def db_instance = env.DB_INSTANCE.split(';').get(index)
-                    def vpc_connector = env.VPC_CONNECTOR.split(';').get(index)
-                    def vpc_egress = env.VPC_EGRESS.split(';').get(index)
+                    def region = env.REGION.split(';')[index]
+                    def service_account = env.SERVICE_ACCOUNT.split(';')[index]
+                    def db_instance = env.DB_INSTANCE.split(';')[index]
+                    def vpc_connector = env.VPC_CONNECTOR.split(';')[index]
+                    def vpc_egress = env.VPC_EGRESS.split(';')[index]
 
                     cloud.deployToRun service_name, region, env.GOOGLE_DOCKER_REGISTRY, env.VERSION, env.ENVIRONMENT, env.PORT, service_account, env.MEMORY, env.CPU, env.TIMEOUT, env.MAXIMUM_REQUESTS, env.MAX_INSTANCES, db_instance, vpc_connector, vpc_egress
                 }
