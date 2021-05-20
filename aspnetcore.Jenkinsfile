@@ -63,9 +63,18 @@ pipeline {
                     env.SERVICE_NAME += prefix + service.service_name
                     env.REGION += prefix + service.region
                     env.SERVICE_ACCOUNT += prefix + service.service_account
-                    env.DB_INSTANCE += prefix + service.db_instance
-                    env.VPC_CONNECTOR += prefix + service.vpc_connector
-                    env.VPC_EGRESS += prefix + service.vpc_egress
+                    
+                    env.DB_INSTANCE += prefix
+                    if(service.db_instance)
+                        env.DB_INSTANCE += service.db_instance
+                    
+                    env.VPC_CONNECTOR += prefix
+                    if(service.vpc_connector)
+                        env.VPC_CONNECTOR += service.vpc_connector
+
+                    env.VPC_EGRESS += prefix
+                    if(service.vpc_egress)
+                        env.VPC_EGRESS += service.vpc_egress
 
                     prefix = delimiter
                 }
