@@ -21,6 +21,7 @@ mapping:
           region: us-east1
           service_account: na-prod-admin@datingapp-example.iam.gserviceaccount.com
           db_instance: datingapp-example:us-east1:datingapp-example-na
+          allow_unauthenticated: true
   test:
     branch: test
     prerelease: true
@@ -39,6 +40,7 @@ mapping:
           region: us-east1
           service_account: na-test-admin@datingapp-example.iam.gserviceaccount.com
           db_instance: datingapp-example:us-east1:datingapp-example-na-test
+          allow_unauthenticated: true
   dev:
     branch: develop
     prerelease: true
@@ -57,3 +59,4 @@ mapping:
           region: us-east1
           service_account: na-dev-admin@datingapp-example.iam.gserviceaccount.com
           db_instance: datingapp-example:us-east1:datingapp-example-na-dev
+          allow_unauthenticated: true
