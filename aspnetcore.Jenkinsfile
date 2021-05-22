@@ -55,6 +55,7 @@ pipeline {
                 env.DB_INSTANCE = ""
                 env.VPC_CONNECTOR = ""
                 env.VPC_EGRESS = ""
+                env.ALLOW_UNAUTHENTICATED = ""
 
                 def services = mapping.cloudrun.services
                 def delimiter = ";"
@@ -75,6 +76,12 @@ pipeline {
                     env.VPC_EGRESS += prefix
                     if(service.vpc_egress)
                         env.VPC_EGRESS += service.vpc_egress
+
+                    env.ALLOW_UNAUTHENTICATED += prefix
+                    if(service.allow_unauthenticated)
+                        env.ALLOW_UNAUTHENTICATED += service.allow_unauthenticated
+                    else
+                        env.ALLOW_UNAUTHENTICATED += "false"
 
                     prefix = delimiter
                 }
@@ -243,8 +250,9 @@ pipeline {
                     def db_instance = env.DB_INSTANCE.split(';')[index]
                     def vpc_connector = env.VPC_CONNECTOR.split(';')[index]
                     def vpc_egress = env.VPC_EGRESS.split(';')[index]
+                    def allow_unauthenticated = env.ALLOW_UNAUTHENTICATED.split(';')[index]
 
-                    cloud.deployToRun service_name, region, env.GOOGLE_DOCKER_REGISTRY, env.VERSION, env.ENVIRONMENT, env.PORT, service_account, env.MEMORY, env.CPU, env.TIMEOUT, env.MAXIMUM_REQUESTS, env.MAX_INSTANCES, db_instance, vpc_connector, vpc_egress
+                    cloud.deployToRun service_name, region, env.GOOGLE_DOCKER_REGISTRY, env.VERSION, env.ENVIRONMENT, env.PORT, service_account, env.MEMORY, env.CPU, env.TIMEOUT, env.MAXIMUM_REQUESTS, env.MAX_INSTANCES, db_instance, vpc_connector, vpc_egress, allow_unauthenticated
                 }
             }
             catch(err) {
