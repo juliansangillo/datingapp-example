@@ -56,6 +56,7 @@ pipeline {
                 env.VPC_CONNECTOR = ""
                 env.VPC_EGRESS = ""
                 env.ALLOW_UNAUTHENTICATED = ""
+                env.ROUTE = ""
 
                 def services = mapping.cloudrun.services
                 def delimiter = ";"
@@ -82,6 +83,10 @@ pipeline {
                         env.ALLOW_UNAUTHENTICATED += service.allow_unauthenticated
                     else
                         env.ALLOW_UNAUTHENTICATED += "false"
+
+                    env.ROUTE += prefix
+                    if(service.route)
+                        env.ROUTE += service.route
 
                     prefix = delimiter
                 }
@@ -251,8 +256,9 @@ pipeline {
                     def vpc_connector = env.VPC_CONNECTOR.split(';')[index]
                     def vpc_egress = env.VPC_EGRESS.split(';')[index]
                     def allow_unauthenticated = env.ALLOW_UNAUTHENTICATED.split(';')[index]
+                    def route = env.ROUTE.split(';')[index]
 
-                    cloud.deployToRun service_name, region, env.GOOGLE_DOCKER_REGISTRY, env.VERSION, env.ENVIRONMENT, env.PORT, service_account, env.MEMORY, env.CPU, env.TIMEOUT, env.MAXIMUM_REQUESTS, env.MAX_INSTANCES, db_instance, vpc_connector, vpc_egress, allow_unauthenticated
+                    cloud.deployToRun service_name, region, env.GOOGLE_DOCKER_REGISTRY, env.VERSION, env.ENVIRONMENT, env.PORT, service_account, env.MEMORY, env.CPU, env.TIMEOUT, env.MAXIMUM_REQUESTS, env.MAX_INSTANCES, db_instance, vpc_connector, vpc_egress, allow_unauthenticated, route
                 }
             }
             catch(err) {
@@ -266,6 +272,48 @@ pipeline {
             script: 'docker push $GOOGLE_DOCKER_REGISTRY:latest',
             label: "Docker push image ${env.GOOGLE_DOCKER_REGISTRY}:latest to Google registry"
         )
+    }
+  }
+
+  stage('Validation') {
+    agent {
+      node {
+        label "${env.AGENT_PREFIX}"
+      }
+
+    }
+    when {
+      beforeAgent true
+      anyOf {
+        branch env.MAPPING_PROD_BRANCH;
+        branch env.MAPPING_TEST_BRANCH;
+      }
+      expression {
+        env.IS_VALID == "true" && env.VERSION.trim()
+      }
+
+    }
+    steps {
+        script {
+            parallelize env.AGENT_PREFIX, env.SERVICE_NAME.split(';'), { service_name ->
+                def index = env.SERVICE_NAME.tokenize(';').indexOf(service_name)
+                def region = env.REGION.split(';')[index]
+
+                try {
+                    input message: "Please validate ${env.ENVIRONMENT} environment. Proceed if build passed. Abort otherwise.", ok: 'Proceed'
+
+                    sh (
+                        script: "gcloud run services update-traffic ${service_name} --platform=managed --region=${region} --to-latest",
+                        label: 'Re-route traffic to latest revision'
+                    )
+                }
+                catch(err) {
+                    semantic.rollback "${env.GITHUB_CREDENTIALS_ID}"
+                    currentBuild.result = 'FAILURE'
+                    error 'User validation failed!'
+                }
+            }
+        }
     }
   }
 
