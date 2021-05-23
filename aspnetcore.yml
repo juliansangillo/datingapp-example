@@ -11,7 +11,7 @@ mapping:
     cloudrun:
       env: Production
       port: 8080
-      memory: 1 GiB
+      memory: 1 Gi
       cpu: 2
       timeout: 300
       maximum_requests: 80
@@ -22,6 +22,7 @@ mapping:
           service_account: na-prod-admin@datingapp-example.iam.gserviceaccount.com
           db_instance: datingapp-example:us-east1:datingapp-example-na
           allow_unauthenticated: true
+          route: datingapp-example.na.naughtybikergames.io
   test:
     branch: test
     prerelease: true
@@ -30,7 +31,7 @@ mapping:
     cloudrun:
       env: Testing
       port: 8080
-      memory: 1 GiB
+      memory: 1 Gi
       cpu: 2
       timeout: 300
       maximum_requests: 80
@@ -41,6 +42,7 @@ mapping:
           service_account: na-test-admin@datingapp-example.iam.gserviceaccount.com
           db_instance: datingapp-example:us-east1:datingapp-example-na-test
           allow_unauthenticated: true
+          route: datingapp-example.na.test.naughtybikergames.io
   dev:
     branch: develop
     prerelease: true
@@ -60,3 +62,4 @@ mapping:
           service_account: na-dev-admin@datingapp-example.iam.gserviceaccount.com
           db_instance: datingapp-example:us-east1:datingapp-example-na-dev
           allow_unauthenticated: true
+          route: datingapp-example.na.dev.naughtybikergames.io
