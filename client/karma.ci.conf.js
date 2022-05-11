@@ -30,17 +30,30 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
+        { type: 'lcovonly' }
       ]
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome', 'Firefox', 'Edge'],
-    singleRun: false,
-    restartOnFileChange: true
+    autoWatch: false,
+    browsers: ['ChromeHeadless', 'FirefoxHeadless', 'EdgeHeadlessCI'],
+    customLaunchers: {
+        'FirefoxHeadless': {
+            base: 'Firefox',
+            flags: [
+                '-headless',
+            ],
+        },
+        'EdgeHeadlessCI': {
+            base: 'EdgeHeadless',
+            flags: [
+                '--no-sandbox'
+            ],
+        }
+    },
+    singleRun: true,
+    restartOnFileChange: false
   });
 };
